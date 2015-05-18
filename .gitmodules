@@ -1,9 +1,9 @@
 [submodule "3rdParty/googletest"]
 	path = 3rdParty/googletest
-	url = git@github.com:svn2github/googletest.git
+	url = https://github.com/svn2github/googletest.git
 [submodule "3rdParty/libzmq"]
 	path = 3rdParty/zeromq
-	url = git@github.com:zeromq/libzmq.git
+	url = https://github.com/zeromq/libzmq.git
 [submodule "3rdParty/cppzmq"]
 	path = 3rdParty/cppzmq
-	url = git@github.com:zeromq/cppzmq.git
+	url = https://github.com/zeromq/cppzmq.git
