@@ -17,8 +17,11 @@ message Basic {
 #include "basic.pb.h"
 
 int main(int argc, char** argv) {
-    auto sender = pq::Bind<Basic>(); // This chooses a port for you and binds a ZMQ_PAIR to it by default
-    auto receiver = pq::Connect<Basic>(sender.get_port()); // This connects to the same port with a ZMQ_PAIR socket
+    // This chooses a port for you and binds a ZMQ_PAIR to it by default
+    auto sender = pq::Bind<Basic>();
+
+    // This connects to the same port with a ZMQ_PAIR socket
+    auto receiver = pq::Connect<Basic>(sender.get_port()); 
 
     Basic basic;
     basic.set_value("hello world!");
