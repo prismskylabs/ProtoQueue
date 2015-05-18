@@ -1,6 +1,8 @@
-# ProtoQueue
+# ProtoQueue [![Build Status](https://travis-ci.org/prismskylabs/ProtoQueue.svg?branch=master)](https://travis-ci.org/prismskylabs/ProtoQueue) [![Coverage Status](https://coveralls.io/repos/prismskylabs/ProtoQueue/badge.svg)](https://coveralls.io/r/prismskylabs/ProtoQueue)
 
-ProtoQueue is a template wrapper around [zeromq](https://github.com/zeromq/libzmq) that simplifies sending and receiving [protobuf](https://github.com/google/protobuf) messages. It abstracts away the messiness of context and port management, allowing you to maintain focus on the semantics of your network topology and message protocol. Look at how easy it is to pass this message around:
+ProtoQueue is a template wrapper around [zeromq](https://github.com/zeromq/libzmq) that simplifies sending and receiving [protobuf](https://github.com/google/protobuf) messages. It abstracts away the messiness of context and port management, allowing you to maintain focus on the semantics of your network topology and message protocol.
+
+Look at how easy it is to pass this message around:
 
 ```protobuf
 // basic.proto
