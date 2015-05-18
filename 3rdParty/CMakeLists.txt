@@ -94,7 +94,7 @@ message(STATUS "| zeromq Configuration")
 message(STATUS "|================================================================================")
 if(NOT ZEROMQ_FOUND)
     add_subdirectory(zeromq)
-    get_property(ZEROMQ_LIBRARIES TARGET libzmq PROPERTY LOCATION)
+    set(ZEROMQ_LIBRARIES libzmq)
     set(ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/zeromq/include
                             ${CMAKE_CURRENT_SOURCE_DIR}/cppzmq)
 endif()
