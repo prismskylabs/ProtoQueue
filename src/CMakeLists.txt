@@ -6,7 +6,6 @@ add_library(${PROTOQUEUE_LIBRARIES}
     address.cpp
     port.cpp
     pq.cpp
-    protoqueue.cpp
     topic.cpp
     type.cpp)
 
