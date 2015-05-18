@@ -2,10 +2,10 @@
 #define PROTOQUEUE_H
 
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <iostream>
 
 #include <zmq.hpp>
 
@@ -91,7 +91,6 @@ class ProtoQueue {
         };
         socket_ = socket_ptr(new zmq::socket_t{ProtoContext::Get().zmq, type_.value}, close);
         if (type_.value == ZMQ_SUB) {
-            std::cout << "setting sockopt" << std::endl;
             socket_->setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
         }
         try {
@@ -105,22 +104,18 @@ class ProtoQueue {
     }
 
     void SetOption(const Port& port) {
-        std::cout << "Setting port " << port << std::endl;
         port_ = port;
     }
 
     void SetOption(const Address& address) {
-        std::cout << "Setting address " << address << std::endl;
         address_ = address;
     }
 
     void SetOption(const Topic& topic) {
-        std::cout << "Setting topic " << topic << std::endl;
         topic_ = topic;
     }
 
     void SetOption(const Type& type) {
-        std::cout << "Setting type " << type << std::endl;
         type_ = type;
     }
 

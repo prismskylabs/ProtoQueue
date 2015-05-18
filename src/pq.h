@@ -2,7 +2,6 @@
 #define PQ_API_H
 
 #include <string>
-#include <iostream>
 
 #include "protoqueue.h"
 
