@@ -93,6 +93,7 @@ endif()
 message(STATUS "| zeromq Configuration")
 message(STATUS "|================================================================================")
 if(NOT ZEROMQ_FOUND)
+    set(ZMQ_BUILD_TESTS OFF CACHE BOOL "Do not build the tests for zeromq" FORCE)
     add_subdirectory(zeromq)
     set(ZEROMQ_LIBRARIES libzmq)
     set(ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/zeromq/include
