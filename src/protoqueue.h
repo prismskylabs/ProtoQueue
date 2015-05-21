@@ -90,14 +90,10 @@ class ProtoQueue {
         if (type_.value == ZMQ_SUB) {
             socket_->setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
         }
-        try {
-            std::stringstream url;
-            url << "tcp://0.0.0.0:" << port_.value;
-            address_.value = url.str();
-            socket_->connect(url.str().data());
-        } catch (zmq::error_t& e) {
-            std::cerr << "Error connecting socket [" << e.num() << "]: " << e.what() << std::endl;
-        }
+        std::stringstream url;
+        url << "tcp://0.0.0.0:" << port_.value;
+        address_.value = url.str();
+        socket_->connect(url.str().data());
     }
 
     void SetOption(const Port& port) {
