@@ -49,11 +49,7 @@ class ProtoQueue {
         socket_ = socket_ptr(new zmq::socket_t{ProtoContext::Get().zmq, type_.value}, close);
         if (address_.value.empty()) {
             if (port_.value == 0) {
-                try {
-                    socket_->bind("tcp://*:*");
-                } catch (zmq::error_t& e) {
-                    std::cerr << "Socket Error [" << e.num() << "]: " << e.what() << std::endl;
-                }
+                socket_->bind("tcp://*:*");
                 char port_string[1024];
                 size_t size = sizeof(port_string);
                 socket_->getsockopt(ZMQ_LAST_ENDPOINT, &port_string, &size);
@@ -67,6 +63,7 @@ class ProtoQueue {
                     socket_->bind(url.str().data());
                 } catch (zmq::error_t& e) {
                     std::cerr << "Socket Error [" << e.num() << "]: " << e.what() << std::endl;
+                    throw e;
                 }
             }
         } else {
@@ -76,6 +73,7 @@ class ProtoQueue {
                 port_.value = std::stoi(address.substr(address.find(':', 4) + 1, address.length()));
             } catch (zmq::error_t& e) {
                 std::cerr << "Socket Error [" << e.num() << "]: " << e.what() << std::endl;
+                throw e;
             }
         }
     }
