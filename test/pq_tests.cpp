@@ -144,8 +144,7 @@ TEST(PushPullTests, PullNoSendTest) {
         pull.Send(basic);
     } catch (const std::exception& e) {
         thrown = true;
-        EXPECT_EQ(std::string{"Operation not supported"},
-                  std::string{e.what()});
+        EXPECT_EQ(std::string{"Operation not supported"}, std::string{e.what()});
     }
     EXPECT_TRUE(thrown);
 }
