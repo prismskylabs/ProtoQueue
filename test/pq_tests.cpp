@@ -11,6 +11,62 @@
 #include "basic.pb.h"
 
 
+TEST(BindTests, DoubleBindTest) {
+    auto bound = pq::Bind<Basic>();
+    auto thrown = false;
+    try {
+        auto another_bound = pq::Bind<Basic>(bound.get_port());
+    } catch (const std::exception& e) {
+        thrown = true;
+        EXPECT_EQ(std::string{"Address already in use"}, std::string{e.what()});
+    }
+    EXPECT_TRUE(thrown);
+}
+
+TEST(BindTests, DoubleBindAddressTest) {
+    auto bound = pq::Bind<Basic>();
+    auto thrown = false;
+    try {
+        auto another_bound = pq::Bind<Basic>(bound.get_address());
+    } catch (const std::exception& e) {
+        thrown = true;
+        EXPECT_EQ(std::string{"Address already in use"}, std::string{e.what()});
+    }
+    EXPECT_TRUE(thrown);
+}
+
+TEST(BindTests, BindPortTest) {
+    auto bound = pq::Bind<Basic>(Port{43561});
+    EXPECT_EQ(Port{43561}.value, bound.get_port().value);
+}
+
+TEST(BindTests, BindAddressTest) {
+    auto bound = pq::Bind<Basic>(Address{"tcp://0.0.0.0:43562"});
+    EXPECT_EQ(Address{"tcp://0.0.0.0:43562"}.value, bound.get_address().value);
+}
+
+TEST(ConnectTests, ConnectBadPortTest) {
+    auto thrown = false;
+    try {
+        auto connected = pq::Connect<Basic>(Port{0});
+    } catch (const std::exception& e) {
+        thrown = true;
+        EXPECT_EQ(std::string{"Socket port must be above 0"}, std::string{e.what()});
+    }
+    EXPECT_TRUE(thrown);
+}
+
+TEST(ConnectTests, ConnectBadNegativePortTest) {
+    auto thrown = false;
+    try {
+        auto connected = pq::Connect<Basic>(Port{-12345});
+    } catch (const std::exception& e) {
+        thrown = true;
+        EXPECT_EQ(std::string{"Socket port must be above 0"}, std::string{e.what()});
+    }
+    EXPECT_TRUE(thrown);
+}
+
 TEST(PairTests, DefaultPairTest) {
     auto bound = pq::Bind<Basic>(); // Defaults to Pair
     auto connected = pq::Connect<Basic>(bound.get_port()); // Defaults to Pair
