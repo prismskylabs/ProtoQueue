@@ -1,5 +1,3 @@
-cmake_policy(SET CMP0026 OLD)
-
 macro(_set_cache VAR_NAME VAR_DESCRIPTION)
     set(${VAR_NAME} ${${VAR_NAME}} CACHE INTERNAL ${VAR_DESCRIPTION})
     message(STATUS "|  ${VAR_NAME}: ${${VAR_NAME}}")
