@@ -25,11 +25,10 @@ class ProtoQueue {
 
     void Send(T t) {
         t.CheckInitialized();
-        std::ostringstream stream;
-        t.SerializeToOstream(&stream);
-        auto str = stream.str();
-        zmq::message_t message{str.length()};
-        memcpy(message.data(), str.data(), str.length());
+        std::string output;
+        t.SerializeToString(&output);
+        zmq::message_t message{output.length()};
+        memcpy(message.data(), output.data(), output.length());
         socket_->send(message);
     }
 
