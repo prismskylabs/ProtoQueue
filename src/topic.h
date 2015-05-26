@@ -7,7 +7,7 @@
 
 class Topic {
   public:
-    Topic(const std::string& topic="") : value{topic} {}
+    Topic(const std::string& topic="") : value(std::string(topic)) {}
 
     friend std::ostream& operator<<(std::ostream& os, const Topic& topic);
 

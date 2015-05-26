@@ -7,7 +7,7 @@
 
 class Address {
   public:
-    Address(const std::string& address="") : value{address} {}
+    Address(const std::string& address="") : value(std::string(address)) {}
 
     friend std::ostream& operator<<(std::ostream& os, const Address& address);
 
