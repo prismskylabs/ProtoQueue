@@ -61,6 +61,12 @@ class ProtoQueue {
                     std::stringstream url;
                     url << "tcp://0.0.0.0:" << port_.value;
                     socket_->bind(url.str().data());
+                    char port_string[1024];
+                    size_t size = sizeof(port_string);
+                    socket_->getsockopt(ZMQ_LAST_ENDPOINT, &port_string, &size);
+                    address_.value = port_string;
+                    auto& address = address_.value;
+                    port_.value = std::stoi(address.substr(address.find(':', 4) + 1, address.length()));
                 } catch (zmq::error_t& e) {
                     std::cerr << "Socket Error [" << e.num() << "]: " << e.what() << std::endl;
                     throw e;
