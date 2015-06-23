@@ -22,6 +22,10 @@ class ProtoQueue {
 
   public:
     ProtoQueue() : address_{}, port_{0}, type_{ZMQ_PAIR} {}
+    ProtoQueue(const ProtoQueue& node) = delete;
+    ProtoQueue(ProtoQueue&& node) = default;
+    ProtoQueue& operator=(const ProtoQueue& node) = delete;
+    ProtoQueue& operator=(ProtoQueue&& node) = default;
 
     void Send(T t) {
         t.CheckInitialized();
