@@ -22,10 +22,20 @@ class ProtoQueue {
 
   public:
     ProtoQueue() : address_{}, port_{0}, type_{ZMQ_PAIR} {}
-    ProtoQueue(const ProtoQueue& node) = delete;
-    ProtoQueue(ProtoQueue&& node) = default;
-    ProtoQueue& operator=(const ProtoQueue& node) = delete;
-    ProtoQueue& operator=(ProtoQueue&& node) = default;
+    ProtoQueue(const ProtoQueue& queue) = delete;
+    ProtoQueue& operator=(const ProtoQueue& queue) = delete;
+    ProtoQueue(ProtoQueue&& queue)
+            : port_(queue.port_), address_(queue.address_), topic_(queue.topic_), type_(queue.type_) {
+        socket_ = std::move(queue.socket_);
+    }
+    ProtoQueue& operator=(ProtoQueue&& queue) {
+        socket_ = std::move(queue.socket_);
+        port_ = queue.port_;
+        address_ = queue.address_;
+        topic_ = queue.topic_;
+        type_ = queue.type_;
+        return *this;
+    }
 
     void Send(T t) {
         t.CheckInitialized();
