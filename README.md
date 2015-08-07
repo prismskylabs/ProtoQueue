@@ -12,16 +12,16 @@ message Basic {
 ```
 
 ```c++
-#include <pq.h> // This is the API header
+#include <protoqueue.h> // This is the API header
 #include <iostream>
 #include "basic.pb.h"
 
 int main(int argc, char** argv) {
     // This chooses a port for you and binds a ZMQ_PAIR to it by default
-    auto sender = pq::Bind<Basic>();
+    auto sender = prism::protoqueue::Bind<Basic>();
 
     // This connects to the same port with a ZMQ_PAIR socket
-    auto receiver = pq::Connect<Basic>(sender.get_port()); 
+    auto receiver = prism::protoqueue::Connect<Basic>(sender.get_port()); 
 
     Basic basic;
     basic.set_value("hello world!");
