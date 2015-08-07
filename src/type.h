@@ -4,6 +4,9 @@
 #include <ostream>
 
 
+namespace prism {
+namespace protoqueue {
+
 class Type {
   public:
     Type(const int& type) : value{type} {}
@@ -12,5 +15,8 @@ class Type {
 
     int value;
 };
+
+} // namespace protoqueue
+} // namespace prism
 
 #endif /* PROTOQUEUE_Type_H */

@@ -4,6 +4,9 @@
 #include <ostream>
 
 
+namespace prism {
+namespace protoqueue {
+
 class Port {
   public:
     Port(const int& port) : value{port} {}
@@ -12,5 +15,8 @@ class Port {
 
     int value;
 };
+
+} // namespace protoqueue
+} // namespace prism
 
 #endif /* PROTOQUEUE_Port_H */

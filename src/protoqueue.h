@@ -5,8 +5,9 @@
 
 #include "protoqueue.h"
 
+namespace prism {
+namespace protoqueue {
 
-namespace pq {
     namespace priv {
         template <typename T>
         void set_option(T& queue) {
@@ -42,5 +43,8 @@ namespace pq {
         return queue;
     }
 }
+
+} // namespace protoqueue
+} // namespace prism
 
 #endif /* PROTOQUEUE_API_H */

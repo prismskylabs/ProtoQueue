@@ -5,6 +5,9 @@
 #include <string>
 
 
+namespace prism {
+namespace protoqueue {
+
 class Address {
   public:
     Address(const std::string& address="") : value(std::string(address)) {}
@@ -13,5 +16,8 @@ class Address {
 
     std::string value;
 };
+
+} // namespace protoqueue
+} // namespace prism
 
 #endif /* PROTOQUEUE_Address_H */

@@ -16,6 +16,9 @@
 #include "type.h"
 
 
+namespace prism {
+namespace protoqueue {
+
 template <typename T>
 class ProtoQueue {
   using socket_ptr = std::unique_ptr<zmq::socket_t, std::function<void(zmq::socket_t*)>>;
@@ -143,5 +146,8 @@ class ProtoQueue {
     Topic topic_;
     Type type_;
 };
+
+} // namespace protoqueue
+} // namespace prism
 
 #endif /* PROTOQUEUE_Socket_H */

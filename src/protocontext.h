@@ -4,6 +4,9 @@
 #include <zmq.hpp>
 
 
+namespace prism {
+namespace protoqueue {
+
 class ProtoContext {
   public:
     static ProtoContext& Get() {
@@ -16,5 +19,8 @@ class ProtoContext {
   private:
     ProtoContext() {};
 };
+
+} // namespace prism
+} // namespace protoqueue
 
 #endif /* PROTOQUEUE_ProtoContext_H */
