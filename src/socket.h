@@ -40,10 +40,10 @@ class Socket {
         return *this;
     }
 
-    void Send(T t) {
-        t.CheckInitialized();
+    void Send(T object) {
+        object.CheckInitialized();
         std::string output;
-        t.SerializeToString(&output);
+        object.SerializeToString(&output);
         zmq::message_t message{output.length()};
         memcpy(message.data(), output.data(), output.length());
         socket_ptr_->send(message);
@@ -51,11 +51,11 @@ class Socket {
 
     T Receive(bool block=true) {
         zmq::message_t message;
-        T t;
+        T object;
         if ((block && socket_ptr_->recv(&message)) || socket_ptr_->recv(&message, ZMQ_NOBLOCK)) {
-            t.ParseFromString(std::string{(char*) message.data(), message.size()});
+            object.ParseFromString(std::string{(char*) message.data(), message.size()});
         }
-        return t;
+        return object;
     }
 
     void Bind() {
