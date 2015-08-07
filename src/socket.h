@@ -1,5 +1,5 @@
-#ifndef PROTOQUEUE_H
-#define PROTOQUEUE_H
+#ifndef PROTOQUEUE_Socket_H
+#define PROTOQUEUE_Socket_H
 
 #include <functional>
 #include <iostream>
@@ -144,4 +144,4 @@ class ProtoQueue {
     Type type_;
 };
 
-#endif
+#endif /* PROTOQUEUE_Socket_H */

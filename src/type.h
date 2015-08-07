@@ -1,5 +1,5 @@
-#ifndef PROTOQUEUE_TYPE_H
-#define PROTOQUEUE_TYPE_H
+#ifndef PROTOQUEUE_Type_H
+#define PROTOQUEUE_Type_H
 
 #include <ostream>
 
@@ -13,4 +13,4 @@ class Type {
     int value;
 };
 
-#endif
+#endif /* PROTOQUEUE_Type_H */

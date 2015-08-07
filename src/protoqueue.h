@@ -1,5 +1,5 @@
-#ifndef PQ_API_H
-#define PQ_API_H
+#ifndef PROTOQUEUE_API_H
+#define PROTOQUEUE_API_H
 
 #include <string>
 
@@ -43,4 +43,4 @@ namespace pq {
     }
 }
 
-#endif
+#endif /* PROTOQUEUE_API_H */

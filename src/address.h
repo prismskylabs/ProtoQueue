@@ -1,5 +1,5 @@
-#ifndef PROTOQUEUE_ADDRESS_H
-#define PROTOQUEUE_ADDRESS_H
+#ifndef PROTOQUEUE_Address_H
+#define PROTOQUEUE_Address_H
 
 #include <ostream>
 #include <string>
@@ -14,4 +14,4 @@ class Address {
     std::string value;
 };
 
-#endif
+#endif /* PROTOQUEUE_Address_H */

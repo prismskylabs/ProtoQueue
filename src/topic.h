@@ -1,5 +1,5 @@
-#ifndef PROTOQUEUE_TOPIC_H
-#define PROTOQUEUE_TOPIC_H
+#ifndef PROTOQUEUE_Topic_H
+#define PROTOQUEUE_Topic_H
 
 #include <ostream>
 #include <string>
@@ -14,4 +14,4 @@ class Topic {
     std::string value;
 };
 
-#endif
+#endif /* PROTOQUEUE_Topic_H */

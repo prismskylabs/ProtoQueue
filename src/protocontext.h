@@ -1,5 +1,5 @@
-#ifndef PROTOCONTEXT_H
-#define PROTOCONTEXT_H
+#ifndef PROTOQUEUE_ProtoContext_H
+#define PROTOQUEUE_ProtoContext_H
 
 #include <zmq.hpp>
 
@@ -17,4 +17,4 @@ class ProtoContext {
     ProtoContext() {};
 };
 
-#endif
+#endif /* PROTOQUEUE_ProtoContext_H */

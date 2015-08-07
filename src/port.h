@@ -1,5 +1,5 @@
-#ifndef PROTOQUEUE_PORT_H
-#define PROTOQUEUE_PORT_H
+#ifndef PROTOQUEUE_Port_H
+#define PROTOQUEUE_Port_H
 
 #include <ostream>
 
@@ -13,4 +13,4 @@ class Port {
     int value;
 };
 
-#endif
+#endif /* PROTOQUEUE_Port_H */
