@@ -6,10 +6,12 @@
 #include <thread>
 #include <vector>
 
-#include <pq.h>
+#include <protoqueue.h>
 
 #include "basic.pb.h"
 
+
+namespace pq = ::prism::protoqueue;
 
 TEST(BindTests, DoubleBindTest) {
     auto bound = pq::Bind<Basic>();
@@ -36,19 +38,19 @@ TEST(BindTests, DoubleBindAddressTest) {
 }
 
 TEST(BindTests, BindPortTest) {
-    auto bound = pq::Bind<Basic>(Port{43561});
-    EXPECT_EQ(Port{43561}.value, bound.get_port().value);
+    auto bound = pq::Bind<Basic>(pq::Port{43561});
+    EXPECT_EQ(pq::Port{43561}.value, bound.get_port().value);
 }
 
 TEST(BindTests, BindAddressTest) {
-    auto bound = pq::Bind<Basic>(Address{"tcp://0.0.0.0:43562"});
-    EXPECT_EQ(Address{"tcp://0.0.0.0:43562"}.value, bound.get_address().value);
+    auto bound = pq::Bind<Basic>(pq::Address{"tcp://0.0.0.0:43562"});
+    EXPECT_EQ(pq::Address{"tcp://0.0.0.0:43562"}.value, bound.get_address().value);
 }
 
 TEST(ConnectTests, ConnectBadPortTest) {
     auto thrown = false;
     try {
-        auto connected = pq::Connect<Basic>(Port{0});
+        auto connected = pq::Connect<Basic>(pq::Port{0});
     } catch (const std::exception& e) {
         thrown = true;
         EXPECT_EQ(std::string{"Socket port must be above 0"}, std::string{e.what()});
@@ -59,7 +61,7 @@ TEST(ConnectTests, ConnectBadPortTest) {
 TEST(ConnectTests, ConnectBadNegativePortTest) {
     auto thrown = false;
     try {
-        auto connected = pq::Connect<Basic>(Port{-12345});
+        auto connected = pq::Connect<Basic>(pq::Port{-12345});
     } catch (const std::exception& e) {
         thrown = true;
         EXPECT_EQ(std::string{"Socket port must be above 0"}, std::string{e.what()});
@@ -77,8 +79,8 @@ TEST(PairTests, DefaultPairTest) {
 }
 
 TEST(PairTests, PairNoneTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         auto basic = connected.Receive(false);
         EXPECT_FALSE(basic.IsInitialized());
@@ -86,8 +88,8 @@ TEST(PairTests, PairNoneTest) {
 }
 
 TEST(PairTests, PairReverseNoneTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         auto basic = bound.Receive(false);
         EXPECT_FALSE(basic.IsInitialized());
@@ -95,8 +97,8 @@ TEST(PairTests, PairReverseNoneTest) {
 }
 
 TEST(PairTests, PairTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         Basic basic;
         basic.set_value("Hello world");
@@ -109,8 +111,8 @@ TEST(PairTests, PairTest) {
 }
 
 TEST(PairTests, PairReverseTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         Basic basic;
         basic.set_value("Hello world");
@@ -123,8 +125,8 @@ TEST(PairTests, PairReverseTest) {
 }
 
 TEST(PairTests, PairNonblockingTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         Basic basic;
         basic.set_value("Hello world");
@@ -143,8 +145,8 @@ TEST(PairTests, PairNonblockingTest) {
 }
 
 TEST(PairTests, PairReverseNonblockingTest) {
-    auto bound = pq::Bind<Basic>(Type{ZMQ_PAIR});
-    auto connected = pq::Connect<Basic>(bound.get_port(), Type{ZMQ_PAIR});
+    auto bound = pq::Bind<Basic>(pq::Type{ZMQ_PAIR});
+    auto connected = pq::Connect<Basic>(bound.get_port(), pq::Type{ZMQ_PAIR});
     {
         Basic basic;
         basic.set_value("Hello world");
@@ -163,8 +165,8 @@ TEST(PairTests, PairReverseNonblockingTest) {
 }
 
 TEST(PushPullTests, PushPullTest) {
-    auto push = pq::Bind<Basic>(Type{ZMQ_PUSH});
-    auto pull = pq::Connect<Basic>(push.get_port(), Type{ZMQ_PULL});
+    auto push = pq::Bind<Basic>(pq::Type{ZMQ_PUSH});
+    auto pull = pq::Connect<Basic>(push.get_port(), pq::Type{ZMQ_PULL});
     {
         Basic basic;
         basic.set_value("Hello world");
@@ -177,8 +179,8 @@ TEST(PushPullTests, PushPullTest) {
 }
 
 TEST(PushPullTests, PushNoReceiveTest) {
-    auto push = pq::Bind<Basic>(Type{ZMQ_PUSH});
-    auto pull = pq::Connect<Basic>(push.get_port(), Type{ZMQ_PULL});
+    auto push = pq::Bind<Basic>(pq::Type{ZMQ_PUSH});
+    auto pull = pq::Connect<Basic>(push.get_port(), pq::Type{ZMQ_PULL});
     auto thrown = false;
     try {
         auto basic = push.Receive();
@@ -191,8 +193,8 @@ TEST(PushPullTests, PushNoReceiveTest) {
 }
 
 TEST(PushPullTests, PullNoSendTest) {
-    auto push = pq::Bind<Basic>(Type{ZMQ_PUSH});
-    auto pull = pq::Connect<Basic>(push.get_port(), Type{ZMQ_PULL});
+    auto push = pq::Bind<Basic>(pq::Type{ZMQ_PUSH});
+    auto pull = pq::Connect<Basic>(push.get_port(), pq::Type{ZMQ_PULL});
     auto thrown = false;
     Basic basic;
     basic.set_value("Hello world");
@@ -206,11 +208,11 @@ TEST(PushPullTests, PullNoSendTest) {
 }
 
 TEST(PubSubTests, PubSubTest) {
-    auto pub = pq::Bind<Basic>(Type{ZMQ_PUB});
-    auto sub = pq::Connect<Basic>(pub.get_port(), Type{ZMQ_SUB});
+    auto pub = pq::Bind<Basic>(pq::Type{ZMQ_PUB});
+    auto sub = pq::Connect<Basic>(pub.get_port(), pq::Type{ZMQ_SUB});
 
     auto response = std::async(std::launch::async,
-            [] (ProtoQueue<Basic>& sub) {
+            [] (pq::Socket<Basic>& sub) {
                 return sub.Receive().value();
             }, std::ref(sub));
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -221,12 +223,12 @@ TEST(PubSubTests, PubSubTest) {
 }
 
 TEST(PubSubTests, PubManySubTest) {
-    auto pub = pq::Bind<Basic>(Type{ZMQ_PUB});
-    auto sub1 = pq::Connect<Basic>(pub.get_port(), Type{ZMQ_SUB});
-    auto sub2 = pq::Connect<Basic>(pub.get_port(), Type{ZMQ_SUB});
-    auto sub3 = pq::Connect<Basic>(pub.get_port(), Type{ZMQ_SUB});
+    auto pub = pq::Bind<Basic>(pq::Type{ZMQ_PUB});
+    auto sub1 = pq::Connect<Basic>(pub.get_port(), pq::Type{ZMQ_SUB});
+    auto sub2 = pq::Connect<Basic>(pub.get_port(), pq::Type{ZMQ_SUB});
+    auto sub3 = pq::Connect<Basic>(pub.get_port(), pq::Type{ZMQ_SUB});
 
-    auto lambda = [] (ProtoQueue<Basic>& sub) {
+    auto lambda = [] (pq::Socket<Basic>& sub) {
                       return sub.Receive().value();
                   };
     auto response1= std::async(std::launch::async, lambda, std::ref(sub1));
