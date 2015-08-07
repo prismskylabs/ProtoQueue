@@ -1,7 +1,6 @@
 #ifndef PROTOQUEUE_API_H
 #define PROTOQUEUE_API_H
 
-#include <string>
 
 #include "protoqueue.h"
 
