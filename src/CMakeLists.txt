@@ -5,7 +5,6 @@ set(PROTOQUEUE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ZEROMQ_INCLUDE_DIRS} C
 add_library(${PROTOQUEUE_LIBRARIES}
     address.cpp
     port.cpp
-    pq.cpp
     topic.cpp
     type.cpp)
 
