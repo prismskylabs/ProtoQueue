@@ -2,7 +2,7 @@ set(PROTOQUEUE_LIBRARIES protoqueue CACHE INTERNAL "Main object library for prot
 set(PROTOQUEUE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ZEROMQ_INCLUDE_DIRS} CACHE INTERNAL
     "Main include directory for protoqueue")
 
-add_library(${PROTOQUEUE_LIBRARIES}
+add_library(${PROTOQUEUE_LIBRARIES} static
     address.cpp
     port.cpp
     topic.cpp
