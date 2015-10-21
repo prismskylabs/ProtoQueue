@@ -64,6 +64,8 @@ class Socket {
             delete socket;
         };
         socket_ptr_ = SocketPtr(new zmq::socket_t{ProtoContext::Get().zmq, type_.value}, close);
+        auto linger = 0;
+        socket_ptr_->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         if (address_.value.empty()) {
             if (port_.value == 0) {
                 socket_ptr_->bind("tcp://*:*");
@@ -110,6 +112,8 @@ class Socket {
             delete socket;
         };
         socket_ptr_= SocketPtr(new zmq::socket_t{ProtoContext::Get().zmq, type_.value}, close);
+        auto linger = 0;
+        socket_ptr_->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         if (type_.value == ZMQ_SUB) {
             socket_ptr_->setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
         }
