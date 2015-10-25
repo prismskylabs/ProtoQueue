@@ -6,6 +6,9 @@ before_build:
     - git submodule update --init --recursive
     - set PROTOBUF_INCLUDE_DIRS=test_value
     - set PROTOBUF_LIBRARIES=test_library_value
+    - set PROTOBUF_FOUND=true
+    - set PROTOBUF_INCLUDE_DIR=test_value
+    - set PROTOBUF_LIBRARY=test_library_value
     - mkdir build
     - cd build
     - cmake .. -G "Visual Studio 14 2015"
