@@ -4,11 +4,10 @@ configuration:
 os: Visual Studio 2015
 before_build:
     - git submodule update --init --recursive
-    - set PROTOBUF_INCLUDE_DIRS=test_value
-    - set PROTOBUF_LIBRARIES=test_library_value
+    - git clone -q https://github.com/prismskylabs/prismprotobuf.git C:\projects\prismprotobuf
+    - set PROTOBUF_INCLUDE_DIRS=C:\projects\prismprotobuf\install\win32\include
+    - set PROTOBUF_LIBRARIES=C:\projects\prismprotobuf\install\win32\lib
     - set PROTOBUF_FOUND=true
-    - set PROTOBUF_INCLUDE_DIR=test_value
-    - set PROTOBUF_LIBRARY=test_library_value
     - mkdir build
     - cd build
     - cmake .. -G "Visual Studio 14 2015"
