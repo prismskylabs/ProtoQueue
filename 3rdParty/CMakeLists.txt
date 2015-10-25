@@ -55,6 +55,7 @@ if(BUILD_PROTOQUEUE_TESTS)
         set(GTEST_INCLUDE_DIRS ${gtest_SOURCE_DIR}/include)
     endif()
 
+    _set_cache(GTEST_FOUND "Set if gtest was found or built.")
     _set_cache(GTEST_LIBRARIES "Location of libgtest.")
     _set_cache(GTEST_MAIN_LIBRARIES "Location of libgtest-main.")
     _set_cache(GTEST_BOTH_LIBRARIES "Location of both gtest libraries.")
