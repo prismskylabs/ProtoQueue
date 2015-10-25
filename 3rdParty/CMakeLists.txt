@@ -68,6 +68,7 @@ endif()
 if(BUILD_PROTOQUEUE_TESTS)
     message(STATUS "| Protobuf Configuration")
     message(STATUS "|================================================================================")
+    message(STATUS "Protobuf ${PROTOBUF_FOUND} ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIRS}")
 
     find_package(Protobuf REQUIRED)
 
