@@ -68,6 +68,18 @@ endif()
 if(BUILD_PROTOQUEUE_TESTS)
     message(STATUS "| Protobuf Configuration")
     message(STATUS "|================================================================================")
+    if(DEFINED ENV{PROTOBUF_FOUND})
+        # Allow setting the option through an environment variable
+        set(PROTOBUF_FOUND $ENV{PROTOBUF_FOUND})
+    endif()
+    if(DEFINED ENV{PROTOBUF_LIBRARIES})
+        # Allow setting the option through an environment variable
+        set(PROTOBUF_LIBRARIES $ENV{PROTOBUF_LIBRARIES})
+    endif()
+    if(DEFINED ENV{PROTOBUF_INCLUDE_DIRS})
+        # Allow setting the option through an environment variable
+        set(PROTOBUF_INCLUDE_DIRS $ENV{PROTOBUF_INCLUDE_DIRS})
+    endif()
     message(STATUS "Protobuf ${PROTOBUF_FOUND} ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIRS}")
 
     find_package(Protobuf REQUIRED)
