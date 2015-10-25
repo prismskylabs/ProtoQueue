@@ -82,17 +82,19 @@ if(BUILD_PROTOQUEUE_TESTS)
     endif()
     message(STATUS "Protobuf ${PROTOBUF_FOUND} ${PROTOBUF_LIBRARIES} ${PROTOBUF_INCLUDE_DIRS}")
 
-    find_package(Protobuf REQUIRED)
+    if(NOT PROTOBUF_FOUND)
+        find_package(Protobuf REQUIRED)
 
-    if(USE_SYSTEM_PROTOBUF)
-        find_package(Protobuf)
-    endif()
-    if(NOT USE_SYSTEM_PROTOBUF OR NOT PROTOBUF_FOUND)
-        message(FATAL_ERROR "System libprotobuf and protoc is required to proceed.\n"
-            "If you're using OS X and have Homebrew installed, you can use the command:\n"
-            "\tbrew install protobuf\n"
-            "If you're using a Linux distribution like Ubuntu, you can use the command:\n"
-            "\tapt-get install libprotobuf-dev protoc")
+        if(USE_SYSTEM_PROTOBUF)
+            find_package(Protobuf)
+        endif()
+        if(NOT USE_SYSTEM_PROTOBUF OR NOT PROTOBUF_FOUND)
+            message(FATAL_ERROR "System libprotobuf and protoc is required to proceed.\n"
+                "If you're using OS X and have Homebrew installed, you can use the command:\n"
+                "\tbrew install protobuf\n"
+                "If you're using a Linux distribution like Ubuntu, you can use the command:\n"
+                "\tapt-get install libprotobuf-dev protoc")
+        endif()
     endif()
 
     _set_cache(PROTOBUF_FOUND "Set if libprotobuf was found or built.")
