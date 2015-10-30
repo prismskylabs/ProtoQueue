@@ -68,7 +68,7 @@ class Socket {
         socket_ptr_->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         if (address_.value.empty()) {
             if (port_.value == 0) {
-                socket_ptr_->bind("tcp://*:*");
+                socket_ptr_->bind("tcp://127.0.0.1:*");
                 char port_string[1024];
                 size_t size = sizeof(port_string);
                 socket_ptr_->getsockopt(ZMQ_LAST_ENDPOINT, &port_string, &size);
@@ -78,7 +78,7 @@ class Socket {
             } else {
                 try {
                     std::stringstream url;
-                    url << "tcp://0.0.0.0:" << port_.value;
+                    url << "tcp://127.0.0.1:" << port_.value;
                     socket_ptr_->bind(url.str().data());
                     char port_string[1024];
                     size_t size = sizeof(port_string);
@@ -118,7 +118,7 @@ class Socket {
             socket_ptr_->setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
         }
         std::stringstream url;
-        url << "tcp://0.0.0.0:" << port_.value;
+        url << "tcp://127.0.0.1:" << port_.value;
         address_.value = url.str();
         socket_ptr_->connect(url.str().data());
     }
