@@ -15,7 +15,6 @@
 #include "topic.h"
 #include "type.h"
 
-
 namespace prism {
 namespace protoqueue {
 
@@ -59,6 +58,8 @@ class Socket {
     }
 
     void Bind() {
+        if(socket_ptr_ != 0)
+            throw std::runtime_error("Already connected or binded");
         auto close = [] (zmq::socket_t* socket) {
             socket->close();
             delete socket;
@@ -66,7 +67,8 @@ class Socket {
         socket_ptr_ = SocketPtr(new zmq::socket_t{ProtoContext::Get().zmq, type_.value}, close);
         auto linger = 0;
         socket_ptr_->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        if (address_.value.empty()) {
+        if (address_.value.empty())
+        {
             if (port_.value == 0) {
                 socket_ptr_->bind("tcp://127.0.0.1:*");
                 char port_string[1024];
@@ -104,9 +106,14 @@ class Socket {
     }
 
     void Connect() {
-        if (port_.value <= 0) {
+        if(socket_ptr_ != 0)
+            throw std::runtime_error("Already connected or binded");
+        if (port_.value <= 0)
             throw std::runtime_error("Socket port must be above 0");
-        }
+
+        if (port_.value > 0xffff)
+            throw std::runtime_error("Socket port can't exceed 0xffff");
+
         auto close = [] (zmq::socket_t* socket) {
             socket->close();
             delete socket;
@@ -124,6 +131,11 @@ class Socket {
     }
 
     void SetOption(const Port& port) {
+        if (port.value < 0)
+            throw std::runtime_error("Socket port must be not less 0");
+
+        if (port.value > 0xffff)
+            throw std::runtime_error("Socket port can't exceed 0xffff");
         port_ = port;
     }
 

@@ -3,6 +3,7 @@ set(PROTOQUEUE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ZEROMQ_INCLUDE_DIRS} C
     "Main include directory for protoqueue")
 
 add_library(${PROTOQUEUE_LIBRARIES} STATIC
+    protocontext.cpp
     address.cpp
     port.cpp
     topic.cpp
