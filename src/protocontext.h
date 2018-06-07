@@ -22,8 +22,8 @@ class ProtoContext {
 
     ProtoContext(const ProtoContext &) = delete;
   private:
-    ~ProtoContext() {syslog(LOG_ERR,"Zmq destroyed %lx %p", gettid(), this);};
-    ProtoContext() {syslog(LOG_ERR,"Zmq created %lx %p", gettid(), this);};
+    ~ProtoContext() {syslog(LOG_INFO,"Zmq destroyed %lx %p", gettid(), this);};
+    ProtoContext() {syslog(LOG_INFO,"Zmq created %lx %p", gettid(), this);};
 };
 
 } // namespace prism
