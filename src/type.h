@@ -9,7 +9,7 @@ namespace protoqueue {
 
 class Type {
   public:
-    Type(const int& type) : value{type} {}
+    Type(const int type) : value{type} {}
 
     friend std::ostream& operator<<(std::ostream& os, const Type& type);
 

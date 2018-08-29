@@ -3,13 +3,6 @@
 
 #include <zmq.hpp>
 
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <signal.h>
-#define gettid() syscall(SYS_gettid)
-#include <syslog.h>
-
 namespace prism {
 namespace protoqueue {
 
@@ -22,8 +15,7 @@ class ProtoContext {
 
     ProtoContext(const ProtoContext &) = delete;
   private:
-    ~ProtoContext() {syslog(LOG_INFO,"Zmq destroyed %lx %p", gettid(), this);};
-    ProtoContext() {syslog(LOG_INFO,"Zmq created %lx %p", gettid(), this);};
+    ProtoContext() = default;
 };
 
 } // namespace prism
