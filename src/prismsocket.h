@@ -78,7 +78,7 @@ class Socket
     Type get_type() { return type_; }
 
   protected:
-    void socketConnect4Send(Socket& sock)
+    void socketConnect4Send(zmq::socket_t& sock)
     {
         auto linger = 0;
         sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
@@ -88,7 +88,7 @@ class Socket
         std::stringstream url;
         url << "tcp://127.0.0.1:" << port_.value;
         address_.value = url.str();
-        socket_.connect(url.str().data());
+        sock.connect(url.str().data());
     }
 
 
