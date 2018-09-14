@@ -35,7 +35,6 @@ class Socket
     {
 
     }
-
     bool Send(const T & object)
     {
         object.CheckInitialized();
@@ -44,6 +43,7 @@ class Socket
         zmq::message_t message{output.length()};
         memcpy(message.data(), output.data(), output.length());
         zmq::socket_t theSocket(ProtoContext::Get().zmq, type_.value);
+        socketConnect4Send(theSocket);
         return socket_.send(message);
     }
 
@@ -76,6 +76,21 @@ class Socket
     Port get_port() { return port_; }
     Address get_address() { return address_; }
     Type get_type() { return type_; }
+
+  protected:
+    void socketConnect4Send(Socket& sock)
+    {
+        auto linger = 0;
+        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+        if (type_.value == ZMQ_SUB)
+            sock.setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
+
+        std::stringstream url;
+        url << "tcp://127.0.0.1:" << port_.value;
+        address_.value = url.str();
+        socket_.connect(url.str().data());
+    }
+
 
   protected:
     Port port_;
@@ -150,15 +165,6 @@ public:
     Connect(const Port & port, const Type & type)
         : Socket<T>(port, type)
     {
-        auto linger = 0;
-        socket_.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        if (type_.value == ZMQ_SUB)
-            socket_.setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
-
-        std::stringstream url;
-        url << "tcp://127.0.0.1:" << port_.value;
-        address_.value = url.str();
-        socket_.connect(url.str().data());
     }
 };
 
