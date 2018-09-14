@@ -36,14 +36,15 @@ class Socket
 
     }
 
-    void Send(const T & object)
+    bool Send(const T & object)
     {
         object.CheckInitialized();
         std::string output;
         object.SerializeToString(&output);
         zmq::message_t message{output.length()};
         memcpy(message.data(), output.data(), output.length());
-        socket_.send(message);
+        zmq::socket_t theSocket(ProtoContext::Get().zmq, type_.value);
+        return socket_.send(message);
     }
 
     T Receive(bool block=true)
