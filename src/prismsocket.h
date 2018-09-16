@@ -35,16 +35,17 @@ class Socket
     {
 
     }
-    bool Send(const T & object)
+    bool Send(const T & object, bool block)
     {
         object.CheckInitialized();
         std::string output;
         object.SerializeToString(&output);
         zmq::message_t message{output.length()};
         memcpy(message.data(), output.data(), output.length());
-        zmq::socket_t theSocket(ProtoContext::Get().zmq, type_.value);
-        socketConnect4Send(theSocket);
-        return socket_.send(message);
+        zmq::socket_t sock(ProtoContext::Get().zmq, type_.value);
+        socketConnect4Send(sock);
+        int flags = block ? 0: ZMQ_NOBLOCK;
+        return sock.send(message, flags);
     }
 
     T Receive(bool block=true)
@@ -78,12 +79,16 @@ class Socket
     Type get_type() { return type_; }
 
   protected:
+    enum { MAX_MESSAGES_IN_FLIGHT = 4 };
     void socketConnect4Send(zmq::socket_t& sock)
     {
         auto linger = 0;
         sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         if (type_.value == ZMQ_SUB)
             sock.setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
+
+        int hwm = MAX_MESSAGES_IN_FLIGHT;
+        sock.setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
 
         std::stringstream url;
         url << "tcp://127.0.0.1:" << port_.value;
@@ -108,12 +113,19 @@ class Bind: public Socket<T>
     using Socket<T>::type_;
     using Socket<T>::topic_;
     using Socket<T>::socket_;
+    using Socket<T>::MAX_MESSAGES_IN_FLIGHT;
 public:
     Bind(const Port & port, const Type & type)
         : Socket<T>(port, type)
     {
         auto linger = 0;
         socket_.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+        int hwm = MAX_MESSAGES_IN_FLIGHT;
+        if(type.value == ZMQ_PUSH)
+        	socket_.setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
+        if(type.value == ZMQ_PULL)
+        	socket_.setsockopt(ZMQ_RCVHWM, &hwm, sizeof(hwm));
+
         if (address_.value.empty())
         {
             if (port_.value == 0) {
