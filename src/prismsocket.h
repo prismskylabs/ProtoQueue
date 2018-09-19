@@ -80,9 +80,22 @@ class Socket
 
   protected:
     enum { MAX_MESSAGES_IN_FLIGHT = 4 };
+    enum { MAX_ZMQ_LINGER_MS = 300 };
+
     void socketConnect4Send(zmq::socket_t& sock)
     {
-        auto linger = 0;
+    	/*  MAX_ZMQ_LINGER_MS can not be zero (as it is widely used sometimes).
+    	 *  It is because we create socket for single send session and if we say linger is zero
+    	 *  we quite likely lose the message, as receiving side does polling with certain period.
+    	 *  Linger value shall be more than time between polls on receiving side
+    	 *  (which we typically hold here <= 100 ms).
+    	 *  We do not want to have this linger time larger than it is now (300ms),
+    	 *  because in this case we have issue with graceful closing of threads,
+    	 *  as wait times there are about 500ms or 1 sec.
+    	 *  300 ms shall be enough to send any message that we have ( < 2MB) on local host.
+    	 */
+
+        auto linger = MAX_ZMQ_LINGER_MS;
         sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         if (type_.value == ZMQ_SUB)
             sock.setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
@@ -114,11 +127,14 @@ class Bind: public Socket<T>
     using Socket<T>::topic_;
     using Socket<T>::socket_;
     using Socket<T>::MAX_MESSAGES_IN_FLIGHT;
+    using Socket<T>::MAX_ZMQ_LINGER_MS;
+
 public:
     Bind(const Port & port, const Type & type)
         : Socket<T>(port, type)
     {
-        auto linger = 0;
+
+        auto linger = MAX_ZMQ_LINGER_MS;
         socket_.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
         int hwm = MAX_MESSAGES_IN_FLIGHT;
         if(type.value == ZMQ_PUSH)
