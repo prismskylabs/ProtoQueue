@@ -105,10 +105,10 @@ class Socket
     Type getType() { return type_; }
 
   protected:
-    enum { MAX_MESSAGES_IN_FLIGHT = 4 };
+    //enum { MAX_MESSAGES_IN_FLIGHT = 4 };
     enum { MAX_ZMQ_LINGER_MS = 300 };
 
-    void socketConnect4Send(zmq::socket_t& sock)
+    void socketConnect4Send(zmq::socket_t& sock, int maxZmqMsgsInFlightHWM)
     {
     	/*  MAX_ZMQ_LINGER_MS can not be zero (as it is widely used sometimes).
     	 *  We quite likely lose the message if we set linger to zero
@@ -126,7 +126,7 @@ class Socket
         if (type_.value == ZMQ_SUB)
             sock.setsockopt(ZMQ_SUBSCRIBE, topic_.value.data(), topic_.value.length());
 
-        int hwm = MAX_MESSAGES_IN_FLIGHT;
+        int hwm = maxZmqMsgsInFlightHWM;
         sock.setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
 
         std::stringstream url;
@@ -152,18 +152,17 @@ class Bind: public Socket<T>
     using Socket<T>::type_;
     using Socket<T>::topic_;
     using Socket<T>::socket_;
-    using Socket<T>::MAX_MESSAGES_IN_FLIGHT;
     using Socket<T>::MAX_ZMQ_LINGER_MS;
 
 
 public:
-    Bind(const Port & port, const Type & type)
+    Bind(const Port & port, const Type & type, int  maxZmqMsgsInFlightHWM)
         : Socket<T>(port, type)
     {
 
         auto linger = MAX_ZMQ_LINGER_MS;
         socket_.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        int hwm = MAX_MESSAGES_IN_FLIGHT;
+        int hwm = maxZmqMsgsInFlightHWM;
         if(type.value == ZMQ_PUSH)
         	socket_.setsockopt(ZMQ_SNDHWM, &hwm, sizeof(hwm));
         if(type.value == ZMQ_PULL)
@@ -223,10 +222,10 @@ class Connect: public Socket<T>
     using Socket<T>::send;
 
 public:
-    Connect(const Port & port, const Type & type)
+    Connect(const Port & port, const Type & type, int maxZmqMsgsInFlightHWM)
         : Socket<T>(port, type)
     {
-    	Socket<T>::socketConnect4Send(socket_);
+    	Socket<T>::socketConnect4Send(socket_, maxZmqMsgsInFlightHWM);
     }
 };
 
@@ -242,8 +241,8 @@ public:
 	PQSender(PQSender&& queue) = delete;
 	PQSender& operator=(PQSender&& queue) = delete;
 
-	PQSender(const Port & port, const Type & type)
-		: port_(port), type_(type), stop_(false)
+	PQSender(const Port & port, const Type & type, int maxZmqMsgsInFlightHWM)
+		: port_(port), type_(type), stop_(false), maxZmqMsgsInFlightHWM_(maxZmqMsgsInFlightHWM)
 	{
 	}
 
@@ -277,6 +276,7 @@ public:
 
     }
 
+
     // it is supposed to be called in separate thread and it will just run there
     // taking care of all sending
     void sendWorker()
@@ -284,7 +284,8 @@ public:
     	// ZMQ socket shall be var on stack of thread that sends.
     	// If you make it member of object not on stack of sending thread, it's wrong use
     	// See http://zeromq.org/whitepapers:0mq-termination
-        Connect<T> socket(port_, type_);
+        Connect<T> socket(port_, type_, maxZmqMsgsInFlightHWM_);
+        int sentCount = 0;
 
     	for(;;)
     	{
@@ -296,18 +297,18 @@ public:
     		}
 			std::chrono::milliseconds waitTime = std::chrono::milliseconds(20);
 			std::unique_lock<std::mutex> mlock(mutex_);
-			if(condVar_.wait_for(mlock, waitTime) == std::cv_status::no_timeout)
+			condVar_.wait_for(mlock, waitTime, [&]{ return !buf_.empty(); });
 			{
-				std::vector<T> buf2;
-				while (!buf_.empty())
-				{
-					buf2.emplace_back( buf_.front() );
-					buf_.pop_front();
-				}
+				std::vector<T> buf2 = buf_;
+				buf_.clear();
 				mlock.unlock();
 				for ( T & msg : buf2)
 				{
 					sendWithHelper(socket, msg, __FILE__, __LINE__);
+					sentCount++;
+					if(sentCount % 100 == 0)
+						syslog(LOG_INFO, "Sender for port %d has message count sent = %d", getPort(), sentCount);
+
 				}
 			}
     	}
@@ -377,12 +378,13 @@ private:
 private:
 	std::mutex mutex_;
 	std::condition_variable condVar_;
-	std::deque<T> buf_;
+	std::vector<T> buf_;
     //std::function< bool() > shutdownRequested_;
     //std::function< void(std::string) > requestShutdown_;
 	Port port_;
 	Type type_;
     volatile bool stop_;
+    int maxZmqMsgsInFlightHWM_;
 
 
 
@@ -400,8 +402,8 @@ public:
 	Sender(Sender&& queue) = delete;
 	Sender& operator=(Sender&& queue) = delete;
 
-	Sender(const Port & port, const Type & type)
-		: sender_(port, type), failed_(false)
+	Sender(const Port & port, const Type & type, int maxZmqMsgsInFlightHWM)
+		: sender_(port, type, maxZmqMsgsInFlightHWM), failed_(false)
 	{
 		syslog(LOG_INFO, "In Sender constructor. Port = %d", (int)port.value);
 		worker_ = std::move(std::thread(&Sender<T, MAXFIFOSIZE>::sendWorker, this));
@@ -409,6 +411,14 @@ public:
 
     void send(const T & object)
     {
+    	if(failed_)
+    	{
+    		std::ostringstream oss;
+    		oss << "ProtoQueue with port ";
+			oss << getPort() << " had senderWorker() thread stopped due to failure: ";
+    		oss << errMessage_;
+    		throw std::runtime_error(oss.str().c_str());
+    	}
     	sender_.send(object);
     }
 
@@ -418,6 +428,9 @@ public:
     }
 
     Port getPort() { return sender_.getPort(); }
+
+    bool failed() { return failed_; }
+    std::string getErrorMessage() { return errMessage_; }
 
 	~Sender()
 	{
