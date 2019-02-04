@@ -251,13 +251,13 @@ public:
 		stop();
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
-    void send(const T & object)
+    void send(T && object)
     {
     	int lastSize = 0;
         object.CheckInitialized();
         {
         	std::lock_guard<std::mutex> grd(mutex_);
-        	buf_.emplace_back(object);
+            buf_.emplace_back(std::move(object));
         	lastSize = buf_.size();
         }
         condVar_.notify_one();
@@ -299,7 +299,7 @@ public:
 			std::unique_lock<std::mutex> mlock(mutex_);
 			condVar_.wait_for(mlock, waitTime, [&]{ return !buf_.empty(); });
 			{
-				std::vector<T> buf2 = buf_;
+                std::vector<T> buf2 = std::move(buf_);
 				buf_.clear();
 				mlock.unlock();
 				for ( T & msg : buf2)
@@ -409,7 +409,7 @@ public:
 		worker_ = std::move(std::thread(&Sender<T, MAXFIFOSIZE>::sendWorker, this));
 	}
 
-    void send(const T & object)
+    void send(T && object)
     {
     	if(failed_)
     	{
@@ -419,7 +419,7 @@ public:
     		oss << errMessage_;
     		throw std::runtime_error(oss.str().c_str());
     	}
-    	sender_.send(object);
+        sender_.send(std::move(object));
     }
 
     void stop()
